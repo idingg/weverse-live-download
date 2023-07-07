@@ -54,4 +54,5 @@ or [https://www.python.org/](https://www.python.org/ftp/python/3.11.4/python-3.1
 　　10-7. 진행률 표시 바  <br>
 11. 코드 파일이 있는 폴더에 저장되며 완료 시 파일경로 표시  <br>
 　11-1. 출력 예 : 다운로드 완료( C:\Users\user1\Downloads\xxxxxxxxxxxxxxxxxxxx.ts )  <br>
+　11-2. 현재 라이브 중인 경우 현재까지의 영상 다운로드 후 '30초 간 대기, 30초 간 확인된 추가영상을 한번에 다운로드'를 반복합니다.  <br>
   <br>
