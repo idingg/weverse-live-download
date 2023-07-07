@@ -1,6 +1,7 @@
 import subprocess
 import sys
 import os
+from time import sleep
 
 print("필요파일 설치확인 중")
 
@@ -20,7 +21,7 @@ import datetime
 def main():
     addr = ""
     while addr == "" or addr.startswith("https://weverse.io/") == False:
-        addr = input("다운받을 위버스 주소 (입력예 : https://weverse.io/... ) : ")
+        addr = input("다운받을 위버스 라이브 주소 (입력예 : https://weverse.io/... ) : ")
 
     playwright = sync_playwright().start()
 
@@ -32,8 +33,9 @@ def main():
     except:
         try:
             browser = playwright.chromium.launch(headless=True, channel="chrome")
-        finally:
-            0
+        except:
+            print("브라우저를 설치 해주세요.")
+            exit(1)
     page = browser.new_context().new_page()
     reqs = []
     page.on("request", lambda request: reqs.append([request.method, request.url]))
@@ -48,7 +50,6 @@ def main():
         if item[1].find(".m3u8") != -1:
             m3u8_allurl = item[1]
             break
-
     m3u8_resolutions = requests.get(m3u8_allurl).content.decode().split(",")
 
     print("선택가능 해상도 : ", end="")
@@ -60,7 +61,9 @@ def main():
             print(resstr.split("=")[1], end=" ")
     print()
 
-    if len(resolutions) > 1 and int(resolutions[0].split("x")[0]) < int(resolutions[1].split("x")[0]):
+    if len(resolutions) > 1 and int(resolutions[0].split("x")[0]) < int(
+        resolutions[1].split("x")[0]
+    ):
         resolutions.reverse()
 
     resolution_to_get = input(
@@ -75,34 +78,46 @@ def main():
         if item.find(resolution_to_get) != -1:
             m3u8_1080filename = item.splitlines()[1]
             break
-    end = m3u8_allurl.find(".m3u8") + 4
-    start = m3u8_allurl.rfind("/")
-    m3u8_1080url = m3u8_allurl.replace(
-        m3u8_allurl[start + 1 : end + 1], m3u8_1080filename
-    )
-    tsfiles = requests.get(m3u8_1080url).content.decode().split(sep=",")
-    tsurls = []
-    for item in tsfiles:
-        if item.find(".ts") != -1:
-            tmp = item.splitlines()[1]
-            tsurls.append(
-                [m3u8_allurl.replace(m3u8_allurl[start + 1 : end + 1], tmp), tmp]
-            )
+    end = m3u8_allurl.find(".m3u8") + 5
+    start = m3u8_allurl[:end].rfind("/")
+    m3u8_1080url = m3u8_allurl.replace(m3u8_allurl[start + 1 : end], m3u8_1080filename)
 
-    path = m3u8_allurl[
-        m3u8_allurl.find("weverse_") : m3u8_allurl.find(
-            "/", m3u8_allurl.find("weverse_")
-        )
-    ]
-    path = m3u8_1080filename.replace(".m3u8", ".ts", 1)
-    cnt = 1
+    first_content = b""
+    new_content = requests.get(m3u8_1080url).content
 
     # save to file
-    downloadsize = 0
-    starttime = datetime.datetime.now()
-    with open("./" + path, "wb+") as one_ts:
+
+    if m3u8_1080url.find("live") != -1:
+        path = new_content[
+            new_content[: new_content.find(b".ts") + 3].rfind(b"\n")
+            + 1 : new_content.find(b".ts")
+            + 3
+        ].decode()
+    elif m3u8_1080url.find("VOD") != -1:
+        path = m3u8_1080filename[m3u8_1080filename.rfind("/") + 1 :].replace(
+            ".m3u8", ".ts", 1
+        )
+
+    one_ts = open("./" + path, "wb+")
+    while new_content != first_content:
+        tsfiles = new_content.replace(first_content, b"", 1).decode().split(sep=",")
+        if m3u8_1080url.find("live") != -1:
+            end = len(m3u8_1080url)
+        elif m3u8_1080url.find("VOD") != -1:
+            end = m3u8_1080url.find(".m3u8") + 5
+        start = m3u8_1080url[: m3u8_1080url.find(".m3u8")].rfind("/")
+
+        tsurls = []
+        for item in tsfiles:
+            if item.find(".ts") != -1:
+                tmp = item.splitlines()[1]
+                tsurls.append(m3u8_1080url.replace(m3u8_1080url[start + 1 : end], tmp))
+
+        cnt = 1
+        downloadsize = 0
+        starttime = datetime.datetime.now()
         for item in tsurls:
-            data = requests.get(item[0])
+            data = requests.get(item)
             one_ts.write(data.content)
             downloadsize += data.content.__len__()
             nowtime = datetime.datetime.now()
@@ -118,13 +133,13 @@ def main():
                 + str(etime / cnt * tsurlslen).split(".")[0]
                 + " {:4d}".format(cnt)
                 + " / "
-                + str(tsurlslen)
+                + "{:4d}".format(tsurlslen)
                 + "  {:5}".format(
                     int(downloadsize / (nowtime.timestamp() - starttime.timestamp()))
                     >> 10
                 )
                 + " KB/s"
-                + "  {:6.2f}".format(cnt * 100 / tsurlslen, 3)
+                + " {:6.2f}".format(cnt * 100 / tsurlslen, 3)
                 + " %"
                 + ("  [{:" + str(barsize) + "s}] ").format(
                     "|" * int((cnt / tsurlslen) * barsize)
@@ -132,6 +147,16 @@ def main():
                 end="",
             )
             cnt += 1
+
+        if m3u8_1080url.find("live") != -1:
+            print("\n30초동안 이어지는 영상을 확인합니다.")
+            one_ts.close()
+            sleep(30)
+            one_ts = open("./" + path, "ab+")
+        first_content = new_content
+        new_content = requests.get(m3u8_1080url).content
+    one_ts.close()
+
     input("\n다운로드 완료( " + os.getcwd() + "\\" + path + " )")
 
 
