@@ -1,15 +1,15 @@
 # weverse-live-download  <br>
 Python code to download weverse live video on you PC.  <br>
-You need Python3.7+, Google Chrome or Microsoft Edge browser on Windows 10+ PC.  <br>
+You need Python3.7+, Google Chrome or Microsoft Edge or Mozilla Firefox browser on Windows 10+ PC.  <br>
 Install Python, download files, run .bat file or .py file directly.  <br>
 You can install easily python3.7+ at the [Microsoft Store](https://apps.microsoft.com/store/detail/python-311/9NRWMJP3717K?hl=ko-kr&gl=kr)  <br>
 or [https://www.python.org/](https://www.python.org/ftp/python/3.11.4/python-3.11.4-amd64.exe)  <br>
   <br>
 위버스 라이브 다운로드용 파이썬 코드입니다.  <br>
-크롬 또는 엣지 브라우저와 파이썬 3.7 이상이 설치된 윈도우 10 이상 컴퓨터에서 실행 가능합니다.  <br>
+크롬 또는 엣지 또는 파이어폭스 브라우저와 파이썬 3.7 이상이 설치된 윈도우 10 이상 컴퓨터에서 실행 가능합니다.  <br>
   <br>
 사용방법  <br>
-1. [크롬](https://www.google.com/intl/ko_kr/chrome/) 또는 [엣지](https://www.microsoft.com/ko-kr/edge/download?form=MA13FJ) 브라우저 설치  <br>
+1. [크롬](https://www.google.com/intl/ko_kr/chrome/) 또는 [엣지](https://www.microsoft.com/ko-kr/edge/download) 또는 [파이어폭스](https://www.mozilla.org/ko/firefox/windows/) 브라우저 설치  <br>
 2. 코드 실행을 위한 파이썬 설치  <br>
 　2-1. [마이크로소프트 스토어(추천)](https://apps.microsoft.com/store/detail/python-311/9NRWMJP3717K?hl=ko-kr&gl=kr)  <br>
 　2-2. [파이썬 공식 홈페이지](https://www.python.org/downloads/)  <br>
@@ -54,5 +54,5 @@ or [https://www.python.org/](https://www.python.org/ftp/python/3.11.4/python-3.1
 　　10-7. 진행률 표시 바  <br>
 11. 코드 파일이 있는 폴더에 저장되며 완료 시 파일경로 표시  <br>
 　11-1. 출력 예 : 다운로드 완료( C:\Users\user1\Downloads\xxxxxxxxxxxxxxxxxxxx.ts )  <br>
-　11-2. 현재 라이브 중인 경우 현재까지의 영상 다운로드 후 '30초 간 대기, 30초 간 확인된 추가영상을 한번에 다운로드'를 반복합니다.  <br>
+　11-2. 현재 라이브 중인 경우 현재까지의 영상 다운로드 후 '30초 간 대기, 30초 간 확인된 추가영상을 한번에 다운로드'를 라이브 종료 시까지 반복합니다.  <br>
   <br>
