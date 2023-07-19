@@ -1,12 +1,12 @@
 # weverse-live-download  <br>
 Python code to download weverse live video on you PC.  <br>
-You need Python3.7+, Google Chrome or Microsoft Edge or Mozilla Firefox browser on Windows 10+ PC.  <br>
+You need Python3.8+, Google Chrome or Microsoft Edge or Mozilla Firefox browser on Windows 10+, MacOS 12 Monterey, 13 Ventura, Debian 11, Ubuntu 20.04 or 22.04 PC.  <br>
 Install Python, download files, run .bat file or .py file directly.  <br>
-You can install easily python3.7+ at the [Microsoft Store](https://apps.microsoft.com/store/detail/python-311/9NRWMJP3717K?hl=ko-kr&gl=kr)  <br>
+You can install easily python3.8+ at the [Microsoft Store](https://apps.microsoft.com/store/detail/python-311/9NRWMJP3717K?hl=ko-kr&gl=kr)  <br>
 or [https://www.python.org/](https://www.python.org/ftp/python/3.11.4/python-3.11.4-amd64.exe)  <br>
   <br>
 위버스 라이브 다운로드용 파이썬 코드입니다.  <br>
-크롬 또는 엣지 또는 파이어폭스 브라우저와 파이썬 3.7 이상이 설치된 윈도우 10 이상 컴퓨터에서 실행 가능합니다.  <br>
+크롬 또는 엣지 또는 파이어폭스 브라우저와 파이썬 3.8 이상 버전과 함께 Windows 10 이상, MacOS 12 Monterey, MacOS 13 Ventura, Debian 11, Ubuntu 20.04 or Ubuntu 22.04 가 설치된 컴퓨터에서 실행 가능합니다.  <br>
   <br>
 사용방법  <br>
 1. [크롬](https://www.google.com/intl/ko_kr/chrome/) 또는 [엣지](https://www.microsoft.com/ko-kr/edge/download) 또는 [파이어폭스](https://www.mozilla.org/ko/firefox/windows/) 브라우저 설치  <br>
@@ -47,8 +47,8 @@ or [https://www.python.org/](https://www.python.org/ftp/python/3.11.4/python-3.1
 　　　　　　　　1　　　 2　　　3　　 4　　　 5　　　　　6　　　　　　　　　7  <br>
 　　9-1. 경과 시간  <br>
 　　9-2. 예상 시간  <br>
-　　9-3. 받은 파일 개수  <br>
-　　9-4. 전체 파일 개수  <br>
+　　9-3. 받은 파일 용량  <br>
+　　9-4. 전체 파일 용량  <br>
 　　9-5. 다운로드 속도  <br>
 　　9-6. 진행률  <br>
 　　9-7. 진행률 표시 바  <br>
