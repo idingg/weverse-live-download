@@ -4,11 +4,12 @@ import os
 import sys
 import subprocess
 from multiprocessing import Pool
+import asyncio
 
 
 def install(package):
     subprocess.check_call(
-        [sys.executable, "-m", "pip", "-q", "install", package, "-i", "http://ftp.daumkakao.com/pypi/simple", "--trusted-host", "ftp.daumkakao.com"])
+        [sys.executable, "-m", "pip", "-qq", "install", package])
 
 
 def downloadts(url: str):
@@ -16,10 +17,33 @@ def downloadts(url: str):
     return get(url)
 
 
+async def getcontentlen_async(urls):
+    import aiohttp
+    sum = 0
+    for url in urls:
+        async with aiohttp.ClientSession() as session:
+            async with await session.head(url) as response:
+                sum += int(response.headers['Content-Length'])
+    return sum
+
+
+def run_getcontentlen_async(urls):
+    return asyncio.run(getcontentlen_async(urls))
+
+
+def getcontentlen(url):
+    from requests import head
+    return int(head(url).headers['Content-Length'])
+
+
 def main():
+    from playwright.sync_api import sync_playwright
+    import aiohttp
+    import requests
     playwright = sync_playwright().start()
     try:
-        browser = playwright.chromium.launch(headless=True, channel="chrome")
+        browser = playwright.chromium.launch(
+            headless=True, channel="chrome")
     except:
         try:
             browser = playwright.chromium.launch(
@@ -39,7 +63,8 @@ def main():
         [request.method, request.url]))
     addr = ""
     while addr == "" or addr.startswith("https://weverse.io/") == False:
-        addr = input("다운받을 위버스 라이브 주소 (입력예 : https://weverse.io/... [엔터]) : ")
+        addr = input(
+            "다운받을 위버스 라이브 주소 (입력예 : https://weverse.io/... [엔터]) : ")
 
     print("라이브 데이터 수집 중")
     page.goto(url=addr, wait_until="networkidle")
@@ -52,7 +77,8 @@ def main():
         if item[1].find(".m3u8") != -1:
             m3u8_allurl = item[1]
             break
-    m3u8_resolutions = requests.get(m3u8_allurl).content.decode().split(",")
+    m3u8_resolutions = requests.get(
+        m3u8_allurl).content.decode().split(",")
 
     print("선택가능 해상도 : ", end="")
     resolutions = []
@@ -120,25 +146,37 @@ def main():
                     m3u8_1080url[start + 1: end], tmp))
 
         cnt = 0
+        filesize = 0
         downloadsize = 0
         poolsize = os.cpu_count()
         start = 0
         end = start+poolsize
-        starttime = datetime.datetime.now()
+        download_starttime = datetime.datetime.now()
+
+        print("파일용량 계산 중 ... ", flush=True)
+        with Pool(poolsize) as p:
+            tsurls_sliced = []
+            for i in range(poolsize):
+                tsurls_sliced.append(
+                    tsurls[int(len(tsurls)*i/poolsize):int(len(tsurls)*(i+1)/poolsize)])
+            filesize = sum(p.map(run_getcontentlen_async, tsurls_sliced))
+        # with Pool(poolsize) as p:
+        #     filesize = sum(p.map(getcontentlen, tsurls))
+        # print("{:d}MB".format(filesize >> 20))
 
         with Pool(poolsize) as p:
+            tsurlslen = len(tsurls)
             while start < len(tsurls):
                 tsurls_part = tsurls[start:end]
-                data = p.map(downloadts, tsurls_part)
-                # for item in data:
-                for i in range(poolsize):
-                    if i < len(data):
-                        one_ts.write(data[i].content)
-                        downloadsize += data[i].content.__len__()
-                        cnt += 1
+                download_part_size = 0
+                part_starttime = datetime.datetime.now()
+                for item in p.map(downloadts, tsurls_part):
+                    one_ts.write(item.content)
+                    download_part_size += item.content.__len__()
+                    cnt += 1
                 nowtime = datetime.datetime.now()
-                etime = nowtime - starttime
-                tsurlslen = len(tsurls)
+                downloadsize += download_part_size
+                etime = nowtime - download_starttime
                 barsize = 25
                 print(
                     "\r"
@@ -147,18 +185,18 @@ def main():
                     + str(etime).split(".")[0]
                     + " / "
                     + str(etime / cnt * tsurlslen).split(".")[0]
-                    + " {:4d}".format(cnt)
-                    + " / "
-                    + "{:4d}".format(tsurlslen)
-                    + "  {:5}".format(
-                        int(downloadsize / \
-                            (nowtime.timestamp() - starttime.timestamp()))
-                        >> 10
-                    )
-                    + " KB/s"
+                    # + " {:4d}".format(cnt)
+                    # + " / "
+                    # + "{:4d}".format(tsurlslen)
+                    + " {:4d}".format(downloadsize >> 20)
+                    + " /"
+                    + " {:4d} MB".format(filesize >> 20)
+                    + " {:5.1f}".format((float)(int(download_part_size / (
+                        nowtime.timestamp() - part_starttime.timestamp())) >> 10) / 1000)
+                    + " MB/s"
                     + " {:6.2f}".format(cnt * 100 / tsurlslen, 3)
                     + " %"
-                    + ("  [{:" + str(barsize) + "s}] ").format(
+                    + (" [{:" + str(barsize) + "s}]").format(
                         "|" * int((cnt / tsurlslen) * barsize)
                     ),
                     end="",
@@ -185,14 +223,14 @@ if __name__ == "__main__":
     print("필수모듈 설치확인 중")
     try:
         from playwright.sync_api import sync_playwright
+        import aiohttp
     except:
         print("라이브 데이터 수집모듈이 발견되지 않아 설치합니다.")
         install("playwright")
-        from playwright.sync_api import sync_playwright
+        install("aiohttp")
     try:
         import requests
     except:
         print("라이브 데이터 다운로더가 발견되지 않아 설치합니다.")
         install("requests")
-        import requests
     main()
