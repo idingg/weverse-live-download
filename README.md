@@ -58,8 +58,8 @@ or [https://www.python.org/](https://www.python.org/ftp/python/3.11.4/python-3.1
   <br>
 
 ## run example(실행 예)
-첫번째 실행 이후에는 7번으로 가주세요.  <br>
-after first launch, go to step 7.  <br>
+첫번째 실행 이후에는 7번으로 가주세요. [7번 링크](https://github.com/idingg/weverse-live-download#%EC%B2%AB%EB%B2%88%EC%A7%B8-%EC%8B%A4%ED%96%89-%EC%9D%B4%ED%9B%84after-first-launch--)  <br>
+after first launch, go to step 7. [Step 7](https://github.com/idingg/weverse-live-download#%EC%B2%AB%EB%B2%88%EC%A7%B8-%EC%8B%A4%ED%96%89-%EC%9D%B4%ED%9B%84after-first-launch--)  <br>
 1. 파이썬 설치 install python, example for Microsoft Store  <br>
 ![01](https://github.com/idingg/weverse-live-download/assets/48832274/e9838c4f-9da8-41fa-abc8-2b1ea024cb8d)  <br>
 2. 다운로드 클릭 Click download  <br>
