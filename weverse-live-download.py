@@ -221,6 +221,7 @@ if __name__ == "__main__":
     print("* Unauthorized or illegal distribution of paid contents, which are available exclusively to those who paid for the subscription, is punishable by law.\n")
 
     print("필수모듈 설치확인 중")
+    isinstalled = False
     try:
         from playwright.sync_api import sync_playwright
         import aiohttp
@@ -228,9 +229,15 @@ if __name__ == "__main__":
         print("라이브 데이터 수집모듈이 발견되지 않아 설치합니다.")
         install("playwright")
         install("aiohttp")
+        isinstalled = True
     try:
         import requests
     except:
         print("라이브 데이터 다운로더가 발견되지 않아 설치합니다.")
         install("requests")
+        isinstalled = True
+    if isinstalled == True :
+        print("\n새로운 모듈이 설치되었습니다. 다시 시작해주세요.")
+        print("Enviroment changed. Please restart.")
+        exit()
     main()
